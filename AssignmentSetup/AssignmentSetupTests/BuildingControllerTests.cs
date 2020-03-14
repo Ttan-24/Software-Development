@@ -55,7 +55,7 @@ namespace AssignmentSetupTests
         }
 
         [Test]
-        public void SetCurrentState_WhenFireAlarm_ReturnFalse()
+        public void SetCurrentState_WhenInputWithoutSpace_ReturnFalse()
         {
             // Arrange
             string input = "firealarm";
@@ -71,7 +71,7 @@ namespace AssignmentSetupTests
         public void SetBuildingID_WhenGetBuildingID_ReturnAreEqual()
         {
             // Arrange
-            string input = "meow";
+            string input = "id";
             // Act
             BuildingController testBuilding = new BuildingController("test");
             testBuilding.SetBuildingID(input);
@@ -85,13 +85,13 @@ namespace AssignmentSetupTests
         public void SetBuildingID_WhenInputCapital_ReturnAreEqual()
         {
             // Arrange
-            string input = "MEOW";
+            string input = "ID";
             // Act
             BuildingController testBuilding = new BuildingController("test");
             testBuilding.SetBuildingID(input);
             string output = testBuilding.GetBuildingID();
             // Assert
-            Assert.AreEqual("meow", output);
+            Assert.AreEqual("id", output);
         }
 
         
