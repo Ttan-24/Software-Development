@@ -8,7 +8,7 @@ namespace AssignmentSetup
 {
     public class BuildingController
     {
-        BuildingController(string id)
+        public BuildingController(string id)
         {
             buildingID = id.ToLower();
             currentState = "out of hours";
@@ -16,13 +16,14 @@ namespace AssignmentSetup
         string buildingID;
         string currentState;
 
-        string GetCurrentState()
+        public string GetCurrentState()
         {
             return currentState;
         }
 
-        bool SetCurrentState(string state)
+        public bool SetCurrentState(string state)
         {
+            state = state.ToLower();
             // set the new currentState
             if (state == "closed" || state == "out of hours" || state == "open" || state == "fire drill" || state == "fire alarm")
             {
@@ -35,12 +36,12 @@ namespace AssignmentSetup
             }
         }
 
-        string GetBuildingID()
+        public string GetBuildingID()
         {
             return buildingID;
         }
 
-        void SetBuildingID(string id)
+        public void SetBuildingID(string id)
         {
             buildingID = id.ToLower();
         }
