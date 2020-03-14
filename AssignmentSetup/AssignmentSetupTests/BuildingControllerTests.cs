@@ -133,6 +133,31 @@ namespace AssignmentSetupTests
             Assert.AreEqual("myid", output);
         }
 
+        /// <summary>
+        /// ////////////////HAVE TO WORK ON THIS//////////////////
+        /// </summary>
+        [Test]
+        public void SetCurrentState_WhenParameterInput_ReturnTrue2()
+        {
+            // Arrange
+            string input = "open";
+            // Act
+            BuildingController testBuilding = new BuildingController("test", "open");
+            bool output = testBuilding.SetCurrentState(input);
+            // Assert
+            Assert.IsTrue(output);
+        }
 
+        [Test]
+        public void SetCurrentState_WhenParameterInput_ReturnFalse2()
+        {
+            // Arrange
+            string input = "red";
+            // Act
+            BuildingController testBuilding = new BuildingController("test", "open");
+            bool output = testBuilding.SetCurrentState(input);
+            // Assert
+            Assert.IsFalse(output);
+        }
     }
 }
