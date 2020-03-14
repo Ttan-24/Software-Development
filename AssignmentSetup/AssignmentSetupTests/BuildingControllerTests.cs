@@ -12,11 +12,15 @@ namespace AssignmentSetupTests
     public class BuildingControllerTests
     {
         // Chekcing if the set current state string words are checked valid
-       [Test]
-       public void testReturn()
+        [TestCase("open")]
+        [TestCase("closed")]
+        [TestCase("out of hours")]
+        [TestCase("fire drill")]
+        [TestCase("fire alarm")]
+        public void SetCurrentState_WhenParameterInput_ReturnTrue(string parameterInput)
         {
             // Arrange
-            string input = "open";
+            string input = parameterInput;
             // Act
             BuildingController testBuilding = new BuildingController("test");
             bool output = testBuilding.SetCurrentState(input);
@@ -26,7 +30,7 @@ namespace AssignmentSetupTests
 
         // Checking if different word put in the set current state would return a false 
         [Test]
-        public void testReturn2()
+        public void SetCurrentState_WhenRed_ReturnFalse()
         {
             // Arrange
             string input = "red";
@@ -39,7 +43,7 @@ namespace AssignmentSetupTests
 
         // Checking if the Capital letters are converted in lower case letters
         [Test]
-        public void testReturn3()
+        public void SetCurrentState_WhenInputCapital_ReturnTrue()
         {
             // Arrange
             string input = "OPEN";
@@ -51,7 +55,7 @@ namespace AssignmentSetupTests
         }
 
         [Test]
-        public void testReturn4()
+        public void SetCurrentState_WhenFireAlarm_ReturnFalse()
         {
             // Arrange
             string input = "firealarm";
@@ -64,7 +68,7 @@ namespace AssignmentSetupTests
 
         // Checking if the set and get building id are working
         [Test]
-        public void testReturn5()
+        public void SetBuildingID_WhenGetBuildingID_ReturnAreEqual()
         {
             // Arrange
             string input = "meow";
@@ -78,7 +82,7 @@ namespace AssignmentSetupTests
 
         // Checking if captial letters are converted into lower case letter in set and get building id
         [Test]
-        public void testReturn6()
+        public void SetBuildingID_WhenInputCapital_ReturnAreEqual()
         {
             // Arrange
             string input = "MEOW";
@@ -93,7 +97,7 @@ namespace AssignmentSetupTests
         
         // checking if the set and get are working
         [Test]
-        public void testReturn7()
+        public void SetCurrentState_WhenGetCurrentState_ReturnAreEqual()
         {
             // Arrange
             string input = "open";
@@ -106,7 +110,7 @@ namespace AssignmentSetupTests
         }
 
         [Test]
-        public void testReturn8()
+        public void GetBuildingID_WhenInput_ReturnAreEqual()
         {
             // Arrange
             string input = "myid";
@@ -118,9 +122,9 @@ namespace AssignmentSetupTests
         }
 
         [Test]
-        public void testReturn9()
+        public void GetBuildingID_WhenInputCapital_ReturnAreEqual()
         {
-            // Arrange
+            // Arrange 
             string input = "MYID";
             // Act
             BuildingController testBuilding = new BuildingController(input);
@@ -128,5 +132,7 @@ namespace AssignmentSetupTests
             // Assert
             Assert.AreEqual("myid", output);
         }
+
+
     }
 }
