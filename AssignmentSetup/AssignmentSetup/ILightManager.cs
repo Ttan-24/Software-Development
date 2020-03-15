@@ -8,6 +8,7 @@ namespace AssignmentSetup
 {
     public interface ILightManager
     {
+        void SetLight(bool isON, int lightID);
         string GetStatus();
         void SetAllLights(bool isOn);
     }

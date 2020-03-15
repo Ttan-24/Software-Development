@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AssignmentSetup;
+using NSubstitute;
 
 namespace AssignmentSetupTests
 {
     [TestFixture]
     public class BuildingControllerTests
     {
+        // L1 REQUIREMENTS
         // Chekcing if the set current state string words are checked valid
         [TestCase("open")]
         [TestCase("closed")]
@@ -21,47 +23,68 @@ namespace AssignmentSetupTests
         {
             // Arrange
             string input = parameterInput;
+            BuildingController buildingController = new BuildingController("id");
+
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            bool output = testBuilding.SetCurrentState(input);
+            bool output = buildingController.SetCurrentState(input);
+
             // Assert
             Assert.IsTrue(output);
         }
 
         // Checking if different word put in the set current state would return a false 
-        [Test]
-        public void SetCurrentState_WhenRed_ReturnFalse()
+        [TestCase ("red")]
+        [TestCase("Green")]
+        [TestCase("123")]
+        [TestCase("RED")]
+        [TestCase("open*")]
+        public void SetCurrentState_WhenParameterInput_ReturnFalse(string parameterInput)
         {
             // Arrange
-            string input = "red";
+            string input = parameterInput;
+            BuildingController buildingController = new BuildingController("id");
+
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            bool output = testBuilding.SetCurrentState(input);
+            bool output = buildingController.SetCurrentState(input);
+
             // Assert
             Assert.IsFalse(output);
         }
 
-        // Checking if the Capital letters are converted in lower case letters
-        [Test]
-        public void SetCurrentState_WhenInputCapital_ReturnTrue()
+        // Checking if the upper case, lower case and mixture of both letters are converted in lower case letters
+        [TestCase ("OPEN")]
+        [TestCase("CLOSED")]
+        [TestCase("OUT OF HOURS")]
+        [TestCase("Open")]
+        [TestCase("oPen")]
+        [TestCase("FIRE alarm")]
+        [TestCase("fire Drill")]
+        public void SetCurrentState_WhenInput_ConvertsInLowerCase_ReturnTrue(string parameterInput)
         {
             // Arrange
-            string input = "OPEN";
+            string input = parameterInput;
+            BuildingController buildingController = new BuildingController("id");
+
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            bool output = testBuilding.SetCurrentState(input);
+            bool output = buildingController.SetCurrentState(input);
+
             // Assert
             Assert.IsTrue(output);
         }
 
-        [Test]
-        public void SetCurrentState_WhenInputWithoutSpace_ReturnFalse()
+        // Checking if word returns false if appropriate spaces not given; examples like fire alarm and fire drill
+        [TestCase ("firealarm")]
+        [TestCase("firedrill")]
+        [TestCase("outofhours")]
+        public void SetCurrentState_WhenInputWithoutSpace_ReturnFalse(string parameterInput)
         {
             // Arrange
-            string input = "firealarm";
+            string input = parameterInput;
+            BuildingController buildingController = new BuildingController("id");
+
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            bool output = testBuilding.SetCurrentState(input);
+            bool output = buildingController.SetCurrentState(input);
+
             // Assert
             Assert.IsFalse(output);
         }
@@ -72,76 +95,92 @@ namespace AssignmentSetupTests
         {
             // Arrange
             string input = "id";
+            BuildingController buildingController = new BuildingController("idString");
+
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            testBuilding.SetBuildingID(input);
-            string output = testBuilding.GetBuildingID();
+            buildingController.SetBuildingID(input);
+            string output = buildingController.GetBuildingID();
+
             // Assert
             Assert.AreEqual(input, output);
         }
 
-        // Checking if captial letters are converted into lower case letter in set and get building id
+        // Checking if the constructor is taking the string id parameter for the buildingID
         [Test]
-        public void SetBuildingID_WhenInputCapital_ReturnAreEqual()
+        public void BuildingControllerParamter_WhenGetBuildingID_ReturnAreEqual()
         {
             // Arrange
-            string input = "ID";
+            string input = "id";
+            BuildingController buildingController = new BuildingController(input);
+
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            testBuilding.SetBuildingID(input);
-            string output = testBuilding.GetBuildingID();
+            string output = buildingController.GetBuildingID();
+
             // Assert
-            Assert.AreEqual("id", output);
+            Assert.AreEqual(input, output);
+        }
+
+        // Checking if upper case and a mixture of both letters are converted into lower case letter in set and get building id
+        [TestCase ("ID")]
+        [TestCase("Id")]
+        public void SetBuildingID_WhenInputCase_ReturnAreEqual(string parameterInput)
+        {
+            // Arrange
+            string input = parameterInput;
+            BuildingController buildingController = new BuildingController("idString");
+
+            // Act
+            buildingController.SetBuildingID(input);
+            string output = buildingController.GetBuildingID();
+
+            // Assert
+            Assert.AreEqual(input.ToLower(), output);
         }
 
 
-        // checking if the set and get are working
+        // checking if the set and get CurrentState are working
         [Test]
         public void SetCurrentState_WhenGetCurrentState_ReturnAreEqual()
         {
             // Arrange
             string input = "open";
+            BuildingController buildingController = new BuildingController("id");
+
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            testBuilding.SetCurrentState(input);
-            string output = testBuilding.GetCurrentState();
+            buildingController.SetCurrentState(input);
+            string output = buildingController.GetCurrentState();
+
             // Assert
             Assert.AreEqual(input, output);
         }
 
+        // Checking if upper case letters are converted in lower case in get buildingID
         [Test]
-        public void GetBuildingID_WhenInput_ReturnAreEqual()
-        {
-            // Arrange
-            string input = "myid";
-            // Act
-            BuildingController testBuilding = new BuildingController(input);
-            string output = testBuilding.GetBuildingID();
-            // Assert
-            Assert.AreEqual(input, output);
-        }
-
-        [Test]
-        public void GetBuildingID_WhenInputCapital_ReturnAreEqual()
+        public void GetBuildingID_WhenInputCase_ReturnAreEqual()
         {
             // Arrange 
             string input = "MYID";
+            BuildingController buildingController = new BuildingController(input);
+
             // Act
-            BuildingController testBuilding = new BuildingController(input);
-            string output = testBuilding.GetBuildingID();
+            string output = buildingController.GetBuildingID();
+
             // Assert
             Assert.AreEqual("myid", output);
         }
 
-
+        // LVL2 REQUIREMENTS
+        // chekcing if the additional constructor returns true
         [Test]
-        public void SetCurrentState_WhenParameterInput_ReturnTrue2()
+        public void SetCurrentState_WhenInput_ReturnTrue()
         {
             // Arrange
             string input = "open";
+            BuildingController buildingController = new BuildingController("id", "open");
+
             // Act
-            BuildingController testBuilding = new BuildingController("test", "open");
-            bool output = testBuilding.SetCurrentState(input);
+            bool output = buildingController.SetCurrentState(input);
+
             // Assert
             Assert.IsTrue(output);
         }
@@ -152,146 +191,196 @@ namespace AssignmentSetupTests
         {
             // Arrange
             string input = "red";
-            // Act      
-            // Assert
-            Assert.Throws<ArgumentException>(() => new BuildingController("test", input));
+               
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => new BuildingController("id", input));
         }
 
         [Test]
         public void SetCurrentState_WhenInput_ReturnPreviousState()
         {
             // Arrange
-            string input1 = "open";
-            string input2 = "fire alarm";
-            string input3 = "closed";
+            string inputOpen = "open";
+            string inputFireAlarm = "fire alarm";
+            string inputClosed = "closed";
+            BuildingController buildingController = new BuildingController("id", inputOpen);
 
             // Act
-            BuildingController testBuilding = new BuildingController("test", input1);
-            testBuilding.SetCurrentState(input2);
-            testBuilding.SetCurrentState(input3);
-            string output = testBuilding.GetCurrentState();
+            buildingController.SetCurrentState(inputFireAlarm);
+            buildingController.SetCurrentState(inputClosed);
+            string output = buildingController.GetCurrentState();
 
             // Assert
-            Assert.AreEqual(input1, output);
+            Assert.AreEqual(inputOpen, output);
         }
 
+        // LVL3 REQUIREMENTS
+        // to check if the GetStatusReport calls the GetStatus methods of all three manager classes 
+        // and returns in single string
         [Test]
         public void GetStatusReport_WhenGetStatus_ReturnString()
         {
             // Arrange
+            BuildingController buildingController = new BuildingController("test");
+            LightManager lightmanager = new LightManager();
+            DoorManager doormanager = new DoorManager();
+            FireAlarmManager firealarmmanager = new FireAlarmManager();
 
             // Act
-            BuildingController testBuilding = new BuildingController("test");
-            LightManager test = new LightManager();
-            DoorManager test2 = new DoorManager();
-            FireAlarmManager test3 = new FireAlarmManager();
-            string output = test.GetStatus();
-            string output2 = test2.GetStatus();
-            string output3 = test3.GetStatus();
-            string result = output + output2 + output3;
-            string output4 = testBuilding.GetStatusReport();
+            string lightStatus = lightmanager.GetStatus();
+            string doorStatus = doormanager.GetStatus();
+            string fireAlarmStatus = firealarmmanager.GetStatus();
+            string result = lightStatus + doorStatus + fireAlarmStatus;
+            string output = buildingController.GetStatusReport();
+
             // Assert
-            Assert.IsTrue(result == output4);
+            Assert.IsTrue(result == output);
         }
 
         [Test]
         public void SetCurrentState_WhenOpen_ReturnOpenAllDoors()
         {
+            // Arrange
             string input = "open";
-            BuildingController testBuilding = new BuildingController("test", input);
-            DoorManager test = new DoorManager();
-            bool output = test.OpenAllDoors();
+            BuildingController buildingController = new BuildingController("id", input);
+            DoorManager doormanager = new DoorManager();
+
+            // Act
+            bool output = doormanager.OpenAllDoors();
+
+            // Assert
             Assert.IsTrue(output);
         }
 
         [Test]
         public void SetCurrentState_TrySetOpen_WhenDoorsCantOpen_ReturnFalse()
         {
+            // Arrange
             string input = "open";
-            DoorManager testDoorManager = new DoorManager();
-            testDoorManager.canOpen = false;
-            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
-            testBuilding.SetCurrentState("closed");
-            bool output = testBuilding.SetCurrentState(input);
+            DoorManager doormanager = new DoorManager();
+            doormanager.canOpen = false;
+            BuildingController buildingController = new BuildingController("id", new LightManager(), new FireAlarmManager(), doormanager, new WebService(), new EmailService());
+
+            // Act
+            buildingController.SetCurrentState("closed");
+            bool output = buildingController.SetCurrentState(input);
+
+            // Assert
             Assert.IsFalse(output);
         }
 
         [Test]
         public void SetCurrentState_TrySetOpen_WhenDoorsCanOpen_ReturnFalse()
         {
+            // Arrange
             string input = "open";
-            DoorManager testDoorManager = new DoorManager();
-            testDoorManager.canOpen = true;
-            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
-            testBuilding.SetCurrentState("closed");
-            bool output = testBuilding.SetCurrentState(input);
+            DoorManager doormanager = new DoorManager();
+            doormanager.canOpen = true;
+            BuildingController buildingController = new BuildingController("id", new LightManager(), new FireAlarmManager(), doormanager, new WebService(), new EmailService());
+
+            // Act
+            buildingController.SetCurrentState("closed");
+            bool output = buildingController.SetCurrentState(input);
+
+            // Assert
             Assert.IsTrue(output);
         }
 
         [Test]
         public void SetCurrentState_WhenRoomIsClosed_DoorsAreLocked()
         {
+            // Arrange
             string input = "open";
-            DoorManager testDoorManager = new DoorManager();
-            testDoorManager.canOpen = true;
-            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
-            testBuilding.SetCurrentState("closed");
-            bool output = testDoorManager.allLocked;
+            DoorManager doormanager = new DoorManager();
+            doormanager.canOpen = true;
+            BuildingController buildingController = new BuildingController("id", new LightManager(), new FireAlarmManager(), doormanager, new WebService(), new EmailService());
+
+            // Act
+            buildingController.SetCurrentState("closed");
+            bool output = doormanager.allLocked;
+
+            // Assert
             Assert.IsTrue(output);
         }
 
+        // LVL4 REQUIREMENTS
         [Test]
         public void SetCurrentState_WhenRoomIsClosed_LightsAreOff()
         {
+            // Arrange
             string input = "closed";
-            LightManager testLightManager = new LightManager();
-            BuildingController testBuilding = new BuildingController("test", testLightManager, new FireAlarmManager(), new DoorManager(), new WebService(), new EmailService());
-            testBuilding.SetCurrentState(input);
-            bool output = testLightManager.allLights;
+            LightManager lightmanager = new LightManager();
+            BuildingController buildingController = new BuildingController("id", lightmanager, new FireAlarmManager(), new DoorManager(), new WebService(), new EmailService());
+
+            // Act
+            buildingController.SetCurrentState(input);
+            bool output = lightmanager.allLights;
+
+            // Assert
             Assert.IsFalse(output);
         }
 
         [Test]
         public void SetCurrentState_WhenFireAlarm_AlarmIsActive()
         {
+            // Arrange
             string input = "fire alarm";
-            FireAlarmManager testFireAlarmManager = new FireAlarmManager();
-            BuildingController testBuilding = new BuildingController("test", new LightManager(), testFireAlarmManager, new DoorManager(), new WebService(), new EmailService());
-            testBuilding.SetCurrentState(input);
-            bool output = testFireAlarmManager.alarmIsOn;
+            FireAlarmManager firealarmManager = new FireAlarmManager();
+            BuildingController buildingController = new BuildingController("id", new LightManager(), firealarmManager, new DoorManager(), new WebService(), new EmailService());
+
+            // Act
+            buildingController.SetCurrentState(input);
+            bool output = firealarmManager.alarmIsOn;
+
+            // Assert
             Assert.IsTrue(output);
         }
 
         [Test]
         public void SetCurrentState_WhenFireAlarm_ReturnOpenAllDoors()
         {
+            // Arrange
             string input = "fire alarm";
-            DoorManager testDoorManager = new DoorManager();
-            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
-            testBuilding.SetCurrentState(input);
-            bool output = testDoorManager.OpenAllDoors();
+            DoorManager doormanager = new DoorManager();
+            BuildingController buildingController = new BuildingController("id", new LightManager(), new FireAlarmManager(), doormanager, new WebService(), new EmailService());
+
+            // Act
+            buildingController.SetCurrentState(input);
+            bool output = doormanager.OpenAllDoors();
+
+            // Assert
             Assert.IsTrue(output);
         }
 
         [Test]
         public void SetCurrentState_WhenFireAlarm_LightsAreOn()
         {
+            // Arrange
             string input = "fire alarm";
-            LightManager testLightManager = new LightManager();
-            BuildingController testBuilding = new BuildingController("test", testLightManager, new FireAlarmManager(), new DoorManager(), new WebService(), new EmailService());
-            testBuilding.SetCurrentState(input);
-            bool output = testLightManager.allLights;
+            LightManager lightmanager = new LightManager();
+            BuildingController buildingController = new BuildingController("id", lightmanager, new FireAlarmManager(), new DoorManager(), new WebService(), new EmailService());
+
+            // Act
+            buildingController.SetCurrentState(input);
+            bool output = lightmanager.allLights;
+
+            // Assert
             Assert.IsTrue(output);
         }
 
         [Test]
         public void SetCurrentState_WhenFireAlarm_WebServiceLog()
         {
+            // Arrange
             string input = "fire alarm";
             WebService testWebService = new WebService();
-            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), new DoorManager(), testWebService, new EmailService());
-            testBuilding.SetCurrentState(input);
+            BuildingController buildingController = new BuildingController("id", new LightManager(), new FireAlarmManager(), new DoorManager(), testWebService, new EmailService());
+
+            // Act
+            buildingController.SetCurrentState(input);
             string output = testWebService.log;
+
+            // Assert
             Assert.IsTrue(output == "fire alarm");
         }
     }

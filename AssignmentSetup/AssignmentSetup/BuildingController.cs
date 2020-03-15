@@ -9,6 +9,12 @@ namespace AssignmentSetup
     public class LightManager : ILightManager
     {
         public bool allLights;
+
+        public void SetLight (bool isON, int lightID)
+        {
+           
+        }
+
         public string GetStatus()
         {
             return "Lights,OK,OK,OK,OK,OK,OK,OK,OK,OK,OK,";
@@ -32,6 +38,7 @@ namespace AssignmentSetup
             alarmIsOn = isActive;
         }
     }
+
     public class DoorManager : IDoorManager
     {
         public bool canOpen = true;
@@ -58,6 +65,11 @@ namespace AssignmentSetup
             allLocked = true;
             return true;
         }
+
+        //public bool OpenDoor (int doorID)
+        //{
+        //    return true;
+        //}
     }
     public class WebService : IWebService
     {
@@ -66,10 +78,18 @@ namespace AssignmentSetup
         {
             log = logDetails;
         }
+
+        public void LogEngineerRequired (string logDetails)
+        {
+
+        }
     }
     public class EmailService : IEmailService
     {
+        public void SendMail (string emailAddress, string subject, string message)
+        {
 
+        }
     }
     public class BuildingController
     {
@@ -79,7 +99,7 @@ namespace AssignmentSetup
         private IDoorManager doorManager = new DoorManager();
         private IFireAlarmManager fireAlarmManager = new FireAlarmManager();
 
-        // Constructors
+        /////////// CONSTRUCTORS
         public BuildingController(string id)
         {
             buildingID = id.ToLower();
@@ -96,11 +116,14 @@ namespace AssignmentSetup
             }
             else
             {
+                // throws an exception if the state input is not valid
                 throw new System.ArgumentException("Argument Exception: BuildingController can only be initialised to the following states 'open', 'closed', 'out of hours'");
                  
             }
             previousState = currentState;
         }
+
+        // Additional constructor to allow dependency injection 
         public BuildingController(string id, ILightManager iLightManager, IFireAlarmManager iFireAlarmManager, IDoorManager iDoorManager, IWebService iWebService, IEmailService iEmailService)
         {
             buildingID = id.ToLower();
@@ -111,7 +134,7 @@ namespace AssignmentSetup
             emailService = iEmailService;
         }
 
-        // Member variables
+        ////////// MEMBER VARIABLES
         string buildingID;
         string currentState;
         string previousState;
@@ -132,26 +155,37 @@ namespace AssignmentSetup
             }
             else
             {
+                // to check if the string input is a valid state 
                 if (state == "closed" || state == "out of hours" || state == "open" || state == "fire drill" || state == "fire alarm")
                 {
+                    // when in fire alarm or fire drill state
                     if (state == "fire alarm" || state == "fire drill")
                     {
-                        //the current state should reset to the previous state
                         previousState = currentState;
                         currentState = state;
                         fireAlarmManager.SetAlarm(true);
                         doorManager.OpenAllDoors();
                         lightManager.SetAllLights(true);
-                        webservice.LogFireAlarm("fire alarm");
+                        try
+                        {
+                            webservice.LogFireAlarm("fire alarm");
+                        }
+                        catch (Exception exception)
+                        {
+                            emailService.SendMail("smartbuilding@uclan.ac.uk", "failed to log alarm", exception.Message);
+                        }
                         return true;
                     }
+                    // After the fire alarm and fire drill state
                     else if (currentState == "fire alarm" || currentState == "fire drill")
                     {
+                        //the current state should reset to the previous state
                         currentState = previousState;
                         return true;
                     }
                     else
                     {
+                        // when in open state all doors should open using door manager
                         if (state == "open")
                         {
                             bool wasAbleToOpen = doorManager.OpenAllDoors();
@@ -165,6 +199,7 @@ namespace AssignmentSetup
                                 return false;
                             }
                         }
+                        // when in close state all doors should close using door manager
                         else if (state == "closed")
                         {
                             bool wasAbleToClose = doorManager.LockAllDoors();
@@ -199,11 +234,31 @@ namespace AssignmentSetup
 
         public void SetBuildingID(string id)
         {
-            buildingID = id.ToLower();
+            buildingID = id.ToLower();   // upper case letter id would be converted in lower case letter id
         }
 
         public string GetStatusReport()
         {
+            // log faults
+            string faultString = "";
+            if (lightManager.GetStatus().Contains("FAULT"))
+            {
+                faultString = faultString + "Lights,";
+            }
+            if (doorManager.GetStatus().Contains("FAULT"))
+            {
+                faultString = faultString + "Doors,";
+            }
+            if (fireAlarmManager.GetStatus().Contains("FAULT"))
+            {
+                faultString = faultString + "FireAlarm,";
+            }
+            if (lightManager.GetStatus().Contains("FAULT") || doorManager.GetStatus().Contains("FAULT") || fireAlarmManager.GetStatus().Contains("FAULT"))
+            {
+                webservice.LogEngineerRequired(faultString);
+            }
+
+            // methods all three manager classes
             return (lightManager.GetStatus() + doorManager.GetStatus() + fireAlarmManager.GetStatus());
         }
     }

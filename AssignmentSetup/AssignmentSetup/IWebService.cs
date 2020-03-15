@@ -9,5 +9,6 @@ namespace AssignmentSetup
     public interface IWebService
     {
         void LogFireAlarm(string logDetails);
+        void LogEngineerRequired(string logDetails);
     }
 }
