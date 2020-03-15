@@ -94,7 +94,7 @@ namespace AssignmentSetupTests
             Assert.AreEqual("id", output);
         }
 
-        
+
         // checking if the set and get are working
         [Test]
         public void SetCurrentState_WhenGetCurrentState_ReturnAreEqual()
@@ -133,9 +133,7 @@ namespace AssignmentSetupTests
             Assert.AreEqual("myid", output);
         }
 
-        /// <summary>
-        /// ////////////////HAVE TO WORK ON THIS//////////////////
-        /// </summary>
+
         [Test]
         public void SetCurrentState_WhenParameterInput_ReturnTrue2()
         {
@@ -148,16 +146,131 @@ namespace AssignmentSetupTests
             Assert.IsTrue(output);
         }
 
+
         [Test]
-        public void SetCurrentState_WhenParameterInput_ReturnFalse2()
+        public void Constructor_WhenParameterInput_ThrowException()
         {
             // Arrange
             string input = "red";
-            // Act
-            BuildingController testBuilding = new BuildingController("test", "open");
-            bool output = testBuilding.SetCurrentState(input);
+            // Act      
             // Assert
+            Assert.Throws<ArgumentException>(() => new BuildingController("test", input));
+        }
+
+        [Test]
+        public void SetCurrentState_WhenInput_ReturnPreviousState()
+        {
+            // Arrange
+            string input1 = "open";
+            string input2 = "fire alarm";
+            string input3 = "closed";
+
+            // Act
+            BuildingController testBuilding = new BuildingController("test", input1);
+            testBuilding.SetCurrentState(input2);
+            testBuilding.SetCurrentState(input3);
+            string output = testBuilding.GetCurrentState();
+
+            // Assert
+            Assert.AreEqual(input1, output);
+        }
+
+        [Test]
+        public void GetStatusReport_WhenGetStatus_ReturnString()
+        {
+            // Arrange
+
+            // Act
+            BuildingController testBuilding = new BuildingController("test");
+            LightManager test = new LightManager();
+            DoorManager test2 = new DoorManager();
+            FireAlarmManager test3 = new FireAlarmManager();
+            string output = test.GetStatus();
+            string output2 = test2.GetStatus();
+            string output3 = test3.GetStatus();
+            string result = output + output2 + output3;
+            string output4 = testBuilding.GetStatusReport();
+            // Assert
+            Assert.IsTrue(result == output4);
+        }
+
+        [Test]
+        public void SetCurrentState_WhenOpen_ReturnOpenAllDoors()
+        {
+            string input = "open";
+            BuildingController testBuilding = new BuildingController("test", input);
+            DoorManager test = new DoorManager();
+            bool output = test.OpenAllDoors();
+            Assert.IsTrue(output);
+        }
+
+        [Test]
+        public void SetCurrentState_TrySetOpen_WhenDoorsCantOpen_ReturnFalse()
+        {
+            string input = "open";
+            DoorManager testDoorManager = new DoorManager();
+            testDoorManager.canOpen = false;
+            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
+            testBuilding.SetCurrentState("closed");
+            bool output = testBuilding.SetCurrentState(input);
             Assert.IsFalse(output);
+        }
+
+        [Test]
+        public void SetCurrentState_TrySetOpen_WhenDoorsCanOpen_ReturnFalse()
+        {
+            string input = "open";
+            DoorManager testDoorManager = new DoorManager();
+            testDoorManager.canOpen = true;
+            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
+            testBuilding.SetCurrentState("closed");
+            bool output = testBuilding.SetCurrentState(input);
+            Assert.IsTrue(output);
+        }
+
+        [Test]
+        public void SetCurrentState_WhenRoomIsClosed_DoorsAreLocked()
+        {
+            string input = "open";
+            DoorManager testDoorManager = new DoorManager();
+            testDoorManager.canOpen = true;
+            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
+            testBuilding.SetCurrentState("closed");
+            bool output = testDoorManager.allLocked;
+            Assert.IsTrue(output);
+        }
+
+        [Test]
+        public void SetCurrentState_WhenRoomIsClosed_LightsAreOff()
+        {
+            string input = "closed";
+            LightManager testLightManager = new LightManager();
+            BuildingController testBuilding = new BuildingController("test", testLightManager, new FireAlarmManager(), new DoorManager(), new WebService(), new EmailService());
+            testBuilding.SetCurrentState(input);
+            bool output = testLightManager.allLights;
+            Assert.IsFalse(output);
+        }
+
+        [Test]
+        public void SetCurrentState_WhenFireAlarm_AlarmIsActive()
+        {
+            string input = "fire alarm";
+            FireAlarmManager testFireAlarmManager = new FireAlarmManager();
+            BuildingController testBuilding = new BuildingController("test", new LightManager(), testFireAlarmManager, new DoorManager(), new WebService(), new EmailService());
+            testBuilding.SetCurrentState(input);
+            bool output = testFireAlarmManager.alarmIsOn;
+            Assert.IsTrue(output);
+        }
+
+        [Test]
+        public void SetCurrentState_WhenFireAlarm_ReturnOpenAllDoors()
+        {
+            string input = "fire alarm";
+            DoorManager testDoorManager = new DoorManager();
+            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), testDoorManager, new WebService(), new EmailService());
+            testBuilding.SetCurrentState(input);
+            bool output = testDoorManager.OpenAllDoors();
+            Assert.IsTrue(output);
         }
     }
 }

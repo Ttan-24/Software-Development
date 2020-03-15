@@ -45,6 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildingController.cs" />
+    <Compile Include="IDoorManager.cs" />
+    <Compile Include="IEmailService.cs" />
+    <Compile Include="IFireAlarmManager.cs" />
+    <Compile Include="ILightManager.cs" />
+    <Compile Include="IWebService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
