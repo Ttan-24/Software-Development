@@ -272,5 +272,27 @@ namespace AssignmentSetupTests
             bool output = testDoorManager.OpenAllDoors();
             Assert.IsTrue(output);
         }
+
+        [Test]
+        public void SetCurrentState_WhenFireAlarm_LightsAreOn()
+        {
+            string input = "fire alarm";
+            LightManager testLightManager = new LightManager();
+            BuildingController testBuilding = new BuildingController("test", testLightManager, new FireAlarmManager(), new DoorManager(), new WebService(), new EmailService());
+            testBuilding.SetCurrentState(input);
+            bool output = testLightManager.allLights;
+            Assert.IsTrue(output);
+        }
+
+        [Test]
+        public void SetCurrentState_WhenFireAlarm_WebServiceLog()
+        {
+            string input = "fire alarm";
+            WebService testWebService = new WebService();
+            BuildingController testBuilding = new BuildingController("test", new LightManager(), new FireAlarmManager(), new DoorManager(), testWebService, new EmailService());
+            testBuilding.SetCurrentState(input);
+            string output = testWebService.log;
+            Assert.IsTrue(output == "fire alarm");
+        }
     }
 }

@@ -61,9 +61,10 @@ namespace AssignmentSetup
     }
     public class WebService : IWebService
     {
+        public string log;
         public void LogFireAlarm (string logDetails)
         {
-
+            log = logDetails;
         }
     }
     public class EmailService : IEmailService
